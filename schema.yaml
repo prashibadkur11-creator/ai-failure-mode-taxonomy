@@ -1,0 +1,76 @@
+# AI Failure Mode Taxonomy — Schema Definition
+#
+# Every failure mode entry in /failure-modes must conform to this schema.
+# This file documents each field and its purpose. It is not itself a failure mode.
+
+schema:
+  id:
+    type: string
+    required: true
+    description: >
+      Short, lowercase, hyphenated slug. Stable identifier used for cross-referencing
+      and filtering. Example: "hallucination", "persona-drift".
+
+  name:
+    type: string
+    required: true
+    description: Human-readable name of the failure mode.
+
+  category:
+    type: string
+    required: true
+    enum: [accuracy, consistency, calibration, safety, reliability, interaction]
+    description: >
+      Top-level grouping. Used to filter the catalog. A failure mode belongs to
+      exactly one primary category even if it touches others.
+
+  summary:
+    type: string
+    required: true
+    description: One- or two-sentence definition. What this failure mode is.
+
+  cause:
+    type: string
+    required: true
+    description: >
+      The mechanism that produces this failure. Why it happens at a technical or
+      systems level — not just that it happens.
+
+  user_experience:
+    type: string
+    required: true
+    description: >
+      How a user actually encounters this failure. The observable symptom from the
+      user's side, which is often different from the technical cause.
+
+  stakes_context:
+    type: object
+    required: true
+    description: Where this failure matters most versus least.
+    fields:
+      high: Contexts where this failure is severe or unacceptable.
+      low: Contexts where this failure is tolerable or even irrelevant.
+
+  detection:
+    type: list
+    required: true
+    description: >
+      Concrete, specific methods for detecting this failure. Opinionated — names
+      actual techniques, metrics, or signals rather than generic advice.
+
+  mitigation:
+    type: list
+    required: true
+    description: >
+      Concrete, opinionated approaches to reduce or prevent this failure. Takes a
+      stance on what works rather than listing every option.
+
+  example:
+    type: string
+    required: true
+    description: A concrete, realistic example of the failure occurring.
+
+  related:
+    type: list
+    required: false
+    description: ids of related failure modes that often co-occur or compound.
