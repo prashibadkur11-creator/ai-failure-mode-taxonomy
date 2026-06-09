@@ -20,9 +20,9 @@ retrospectives.
 .
 ├── schema.yaml              # The fixed schema every failure mode conforms to
 ├── failure-modes/           # One YAML file per failure mode (the source of truth)
-├── generate_catalog.py  # Generates CATALOG.md from the YAML
+├── generate_catalog.py      # Generates CATALOG.md from the YAML
 ├── CATALOG.md               # Readable, generated catalog (browse this first)
-└── product-audit.md     # Fillable template to audit your own product
+└── product-audit.md         # Fillable template to audit your own product
 ```
 
 ## The schema
