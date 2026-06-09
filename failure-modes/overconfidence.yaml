@@ -1,0 +1,60 @@
+id: overconfidence
+name: Overconfidence / Miscalibration
+category: calibration
+summary: >
+  The model expresses uniform high confidence regardless of whether it is right or
+  wrong, so its tone carries no information about reliability.
+
+cause: >
+  Models are trained to produce fluent, assertive text. There is no built-in coupling
+  between a model's linguistic confidence and its actual accuracy, so hedging and
+  certainty are stylistic choices rather than calibrated signals.
+
+user_experience: >
+  Everything sounds equally authoritative. The user cannot distinguish a rock-solid
+  answer from a shaky one by tone, so they either over-trust everything or learn to
+  distrust everything — both bad outcomes.
+
+stakes_context:
+  high: >
+    Decision-support tools where the user acts on the output; contexts with users who
+    have low AI literacy and will take confident phrasing at face value.
+  low: >
+    Low-stakes assistance where the user is already in a verify-everything posture.
+
+detection:
+  - >
+    Measure calibration directly: bucket outputs by stated/elicited confidence and
+    plot accuracy per bucket. A well-calibrated system shows accuracy rising with
+    confidence. A flat line means confidence is noise.
+  - >
+    Elicit token-level or self-reported confidence and correlate with eval correctness.
+    Low correlation is the failure.
+  - >
+    Watch for the "confident wrong" pattern in error review — categorize each error by
+    whether the model hedged. A high rate of confident errors is the signal.
+
+mitigation:
+  - >
+    Decouple displayed confidence from model tone. Derive an uncertainty signal from
+    something structural — retrieval coverage, ensemble agreement, log-probs — and
+    surface that, not the model's prose confidence.
+  - >
+    Design the UX to show calibrated uncertainty explicitly (e.g. "high / medium / low
+    confidence" backed by a real signal) rather than letting fluent text imply certainty.
+  - >
+    Train or prompt for appropriate hedging on genuinely uncertain inputs, and verify
+    in evals that hedged answers actually correlate with lower accuracy.
+  - >
+    For automated downstream actions, gate on a real confidence signal, never on the
+    absence of hedging language in the output.
+
+example: >
+  A financial planning assistant states "You should move your entire portfolio to bonds"
+  in the same assured tone it uses for "Compound interest is calculated annually here."
+  The first is a high-stakes judgment under uncertainty; the second is a fact. The user
+  has no way to tell them apart.
+
+related:
+  - hallucination
+  - sycophancy

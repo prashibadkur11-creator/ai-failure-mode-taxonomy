@@ -1,0 +1,59 @@
+id: persona-drift
+name: Persona / Tone Drift
+category: consistency
+summary: >
+  The model's defined personality, tone, or role degrades over the course of an
+  interaction, breaking the consistency users rely on to trust the product.
+
+cause: >
+  System-prompt instructions lose influence as the conversation grows and recent user
+  turns dominate the context. Long sessions, emotionally charged input, or repeated
+  user steering pull the model away from its intended persona toward a generic or
+  user-mirrored voice.
+
+user_experience: >
+  The assistant that started as a sharp, concise expert gradually becomes verbose,
+  apologetic, or sycophantic — or quietly drops the role entirely. The product feels
+  like it "forgot who it is," which erodes trust even when answers stay correct.
+
+stakes_context:
+  high: >
+    Products whose value is the persona itself — coaches, tutors, branded characters,
+    voice assistants with a defined personality. Drift here is a core product failure.
+  low: >
+    Single-turn utilities where there is no persona to maintain.
+
+detection:
+  - >
+    Run an LLM-as-judge persona-adherence score across the full session, not just the
+    first turn. Sample turns at depth 1, 10, 25, 50 and check whether adherence decays.
+  - >
+    Build a fixed set of "persona stress" test conversations (long, emotional, steering)
+    and track adherence as a regression metric across model and prompt changes.
+  - >
+    Watch for tone-mirroring in production: measure whether output style correlates too
+    tightly with input style, which indicates the persona is being overridden by the user.
+
+mitigation:
+  - >
+    Reinforce the persona periodically rather than once. Re-inject the key persona
+    constraints at intervals or before high-stakes turns, not only in the system prompt.
+  - >
+    Keep persona definitions tight and behavioral ("never apologizes more than once",
+    "answers in under three sentences") rather than abstract ("be helpful and friendly"),
+    which gives you something testable.
+  - >
+    Cap or summarize runaway context. Long sessions are the primary driver of drift;
+    a rolling summary preserves persona influence better than an ever-growing transcript.
+  - >
+    Do not rely solely on a strong opening system prompt. Its relative weight decays
+    as the conversation grows — design for reinforcement.
+
+example: >
+  A coaching app advertises a blunt, challenging persona. By turn 30, after the user
+  pushes back a few times, the coach has become soft and validating — the exact
+  opposite of the product promise the user signed up for.
+
+related:
+  - context-loss
+  - sycophancy

@@ -1,0 +1,64 @@
+id: hallucination
+name: Hallucination
+category: accuracy
+summary: >
+  The model produces confident, plausible-sounding output that is factually wrong
+  or entirely fabricated, with no internal signal that it is uncertain.
+
+cause: >
+  LLMs generate the most probable continuation of a sequence, not the most truthful
+  one. When the training distribution is thin, the prompt is ambiguous, or the answer
+  requires information the model does not have, it fills the gap with fluent invention
+  rather than abstaining.
+
+user_experience: >
+  The user receives an answer that looks indistinguishable from a correct one —
+  same tone, same confidence, same fluency. There is no visible cue that this
+  particular output is unreliable, so the user has no reason to verify it.
+
+stakes_context:
+  high: >
+    Medical, legal, financial, or safety contexts; any output the user cannot easily
+    verify; any output that feeds a downstream automated action.
+  low: >
+    Brainstorming, ideation, and creative drafts where the user expects to filter
+    and verify, and where being wrong has no cost.
+
+detection:
+  - >
+    Run a retrieval-grounded eval: for factual claims, check whether each claim is
+    supported by a retrieved source. Unsupported claims are your hallucination rate.
+  - >
+    Use an LLM-as-judge pass specifically scoped to factuality, with the source
+    material in context — not a general "is this good" judge, which misses fabrication.
+  - >
+    Instrument user-facing "report incorrect" signals and treat the rate as a
+    production canary. A spike after a model or prompt change is your earliest warning.
+  - >
+    For high-stakes domains, maintain a fixed adversarial eval set of questions
+    known to induce fabrication (obscure entities, plausible-but-fake citations).
+
+mitigation:
+  - >
+    Ground the model with retrieval (RAG) and require it to cite sources from the
+    retrieved context. If it cannot cite, it should abstain. This is the single
+    highest-leverage intervention.
+  - >
+    Prompt for explicit abstention: instruct the model to say "I don't know" rather
+    than guess, and reward abstention in your evals so you do not optimize it away.
+  - >
+    Never display raw factual output in high-stakes contexts without a verification
+    path. Surface sources inline so the user can check in one click.
+  - >
+    Do not rely on raising the model's confidence threshold via prompting alone —
+    models comply with "only answer if certain" inconsistently. Use retrieval as the
+    structural fix.
+
+example: >
+  A user asks a legal research assistant for case law supporting a position. The model
+  returns three citations with realistic names, courts, and dates. Two of the three
+  cases do not exist. The user, seeing well-formatted citations, files them.
+
+related:
+  - overconfidence
+  - outdated-knowledge

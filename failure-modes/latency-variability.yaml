@@ -1,0 +1,56 @@
+id: latency-variability
+name: Latency Variability
+category: reliability
+summary: >
+  Response time is unpredictable — sometimes fast, sometimes slow — breaking the
+  experience even when the average latency looks acceptable.
+
+cause: >
+  Output length varies with input, provider-side load fluctuates, retries and fallbacks
+  add tail latency, and longer reasoning or tool chains take variable time. Averages hide
+  this; the tail is what users feel.
+
+user_experience: >
+  The product feels unreliable and "laggy" even if it is usually fast, because users
+  remember the slow responses. In conversational or voice interfaces, variable latency
+  breaks turn-taking and makes the interaction feel broken.
+
+stakes_context:
+  high: >
+    Real-time and voice interfaces; interactive flows where the user is waiting on the
+    response; anything where rhythm and responsiveness are part of the experience.
+  low: >
+    Asynchronous or batch tasks where the user does not wait on the result in real time.
+
+detection:
+  - >
+    Track p95 and p99 latency, not the mean. The mean will look fine while the tail
+    quietly ruins the experience for a meaningful slice of interactions.
+  - >
+    Segment latency by output length and by feature path to find which interactions
+    produce the bad tail.
+  - >
+    For voice/real-time, measure time-to-first-token separately from total time — the
+    first token is what governs perceived responsiveness.
+
+mitigation:
+  - >
+    Stream output so the user sees a response begin immediately; time-to-first-token
+    matters far more to perceived speed than total completion time.
+  - >
+    Set explicit latency budgets and enforce timeouts with graceful fallbacks rather than
+    letting slow calls hang.
+  - >
+    For real-time interfaces, mask latency with interaction design (acknowledgement,
+    interim states) so variability is less perceptible.
+  - >
+    Use a smaller, faster model on latency-critical paths and reserve larger models for
+    moments where the user tolerates a wait.
+
+example: >
+  A voice assistant usually replies in under a second, but every so often a response takes
+  four seconds. In a spoken conversation, those pauses read as the assistant having failed,
+  and the user starts talking over it.
+
+related:
+  - silent-degradation

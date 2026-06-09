@@ -1,0 +1,56 @@
+id: bias-and-representational-harm
+name: Bias / Representational Harm
+category: safety
+summary: >
+  The model produces output that is systematically worse, skewed, or stereotyping for some
+  groups of users or subjects, reflecting biases in its training data.
+
+cause: >
+  Training data carries the imbalances and stereotypes of its sources. The model reproduces
+  these, performing better for well-represented groups and worse for underrepresented ones,
+  and sometimes encoding stereotypes directly into output.
+
+user_experience: >
+  Output quality varies by who the user is or who the content is about — names, dialects,
+  languages, or demographics that are underrepresented get worse results, or get
+  stereotyped associations. Affected users experience the product as not built for them.
+
+stakes_context:
+  high: >
+    Hiring, lending, healthcare, content moderation, and any consumer product with a diverse
+    user base; anything where skewed output causes real allocation or representation harm.
+  low: >
+    Narrow internal tools with a homogeneous, well-characterized input domain — though this
+    is rarer than teams assume.
+
+detection:
+  - >
+    Run disaggregated evals: measure quality metrics separately across demographic and
+    linguistic segments rather than only in aggregate. Aggregate scores hide the gap.
+  - >
+    Use counterfactual testing: hold a prompt fixed and vary only a demographic signal
+    (name, gender, dialect) to see whether output changes in ways it should not.
+  - >
+    Build targeted probes for known stereotype associations relevant to your domain.
+
+mitigation:
+  - >
+    Test across the actual diversity of your user base before GA, and gate launch on
+    segment-level quality, not just aggregate quality.
+  - >
+    Ensure non-AI or fallback paths are first-class for segments the model serves poorly,
+    rather than leaving those users with a degraded experience.
+  - >
+    Be explicit in prompts/policies about avoiding stereotyped assumptions, and verify the
+    effect with counterfactual evals rather than assuming the instruction worked.
+  - >
+    Where the domain is regulated (hiring, lending), prefer interpretable approaches and keep
+    humans in the decision loop.
+
+example: >
+  A resume-screening assistant rates candidates with non-Western names lower on average than
+  identical resumes with Western names, because the pattern existed in its training data.
+  The bias is invisible in aggregate accuracy and only appears under counterfactual testing.
+
+related:
+  - over-refusal

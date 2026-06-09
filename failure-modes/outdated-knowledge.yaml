@@ -1,0 +1,54 @@
+id: outdated-knowledge
+name: Outdated Knowledge
+category: accuracy
+summary: >
+  The model answers from a fixed training cutoff, confidently providing information that
+  was true once but is now stale, without signaling that its knowledge has an expiry.
+
+cause: >
+  A model's parametric knowledge is frozen at its training cutoff. It has no inherent
+  awareness of the current date or of what has changed since, so it presents stale facts
+  with the same confidence as current ones.
+
+user_experience: >
+  The user asks about something time-sensitive — a current price, a present officeholder,
+  the latest version of a tool — and gets a confidently stated answer that is simply out
+  of date, with no cue that it might be.
+
+stakes_context:
+  high: >
+    Anything time-sensitive: prices, news, current roles and status, laws and policies,
+    software versions, availability. Also anything where "as of when?" changes the answer.
+  low: >
+    Stable knowledge — math, settled history, definitions, concepts — that does not change
+    with time.
+
+detection:
+  - >
+    Categorize query types by volatility and measure accuracy specifically on the
+    time-sensitive ones; aggregate accuracy will hide this failure.
+  - >
+    Maintain an eval set of questions with known recently-changed answers and check whether
+    the system retrieves the current answer or relies on stale parametric knowledge.
+  - >
+    Monitor user corrections that contain temporal language ("that's outdated", "as of when").
+
+mitigation:
+  - >
+    Route volatile queries through retrieval or live tools rather than parametric memory.
+    For present-day facts, the model should look it up, not recall it.
+  - >
+    Inject the current date into context and instruct the model to flag when its answer may
+    be time-sensitive and worth verifying.
+  - >
+    Classify incoming queries by volatility and force a retrieval path for the time-sensitive
+    class rather than trusting the model to know it should not answer from memory.
+
+example: >
+  A user asks a research assistant for the current pricing of a SaaS product. The model
+  states a figure from its training data that the vendor changed eight months ago, with no
+  indication the number could be stale.
+
+related:
+  - hallucination
+  - silent-degradation

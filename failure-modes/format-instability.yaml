@@ -1,0 +1,56 @@
+id: format-instability
+name: Format / Output Instability
+category: consistency
+summary: >
+  The model fails to reliably produce output in the required structure — malformed JSON,
+  missing fields, inconsistent schema — breaking any system that consumes its output.
+
+cause: >
+  Generation is probabilistic, so even with clear format instructions the model occasionally
+  deviates: extra prose around JSON, a dropped field, a changed key, an unescaped character.
+  At scale, a low per-call failure rate becomes a frequent production problem.
+
+user_experience: >
+  Often invisible to the end user directly, but it surfaces as downstream breakage — a parse
+  error, a blank UI element, a failed automation. The feature "randomly doesn't work."
+
+stakes_context:
+  high: >
+    Any pipeline that parses model output programmatically; agent tool-calling; structured
+    extraction feeding databases or UI components.
+  low: >
+    Free-form conversational output that a human reads directly with no parsing step.
+
+detection:
+  - >
+    Validate every structured output against a strict schema and log the validation-failure
+    rate. That rate is your format-instability metric; treat a nonzero rate as expected, not
+    exceptional.
+  - >
+    Track which fields fail most often and under what inputs — failures often cluster around
+    edge-case inputs (empty values, special characters, very long content).
+  - >
+    Alert on format-failure spikes after any model or prompt change.
+
+mitigation:
+  - >
+    Use structured-output / constrained-decoding features (JSON mode, tool schemas, grammars)
+    where the provider supports them rather than relying on prompt instructions alone. This is
+    the structural fix.
+  - >
+    Always validate against a schema on receipt and have a defined fallback: a single
+    reformat-retry, then a graceful degraded path — never assume the output parses.
+  - >
+    Keep required schemas as simple and flat as the use case allows; deeply nested or
+    elaborate structures fail more often.
+  - >
+    Make the consuming code defensive — handle missing or malformed fields without crashing
+    the whole interaction.
+
+example: >
+  An extraction feature expects JSON with five fields. On about one call in fifty the model
+  wraps the JSON in explanatory prose, the parser throws, and the user sees an empty result
+  with no explanation.
+
+related:
+  - silent-degradation

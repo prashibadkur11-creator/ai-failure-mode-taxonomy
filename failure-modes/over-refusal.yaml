@@ -1,0 +1,56 @@
+id: over-refusal
+name: Over-Refusal / Over-Caution
+category: interaction
+summary: >
+  The model declines, hedges, or adds heavy caveats to reasonable requests, treating
+  benign inputs as if they were risky.
+
+cause: >
+  Safety training that is tuned conservatively, or guardrail prompts that are too broad,
+  cause the model to over-generalize from genuinely sensitive cases to benign ones that
+  merely share surface features (keywords, topic adjacency).
+
+user_experience: >
+  The user asks a legitimate question and gets refused, lectured, or buried in disclaimers.
+  It feels patronizing and obstructive, and pushes users toward competitors that "just
+  answer." Over-refusal is a silent conversion killer.
+
+stakes_context:
+  high: >
+    Professional tools in medicine, law, security, and other fields where legitimate work
+    routinely involves sensitive-sounding topics; productivity tools where friction drives churn.
+  low: >
+    Consumer toys or contexts where the safe set of requests is narrow and well-defined.
+
+detection:
+  - >
+    Maintain a "benign-but-sensitive" eval set — legitimate requests that pattern-match to
+    risky ones — and measure the false-refusal rate. This is the metric most teams forget
+    to track because they only test that unsafe requests get refused.
+  - >
+    Mine production logs for refusal responses and have humans label what fraction were
+    unwarranted.
+  - >
+    Track abandonment immediately following a refusal or heavy-caveat response.
+
+mitigation:
+  - >
+    Tune guardrails on both axes: measure false-refusal rate alongside unsafe-allow rate
+    and optimize the tradeoff explicitly, rather than minimizing only one.
+  - >
+    Replace blanket topic bans with intent-aware checks; the same topic can be a legitimate
+    professional query or a harmful one, and the distinction is the intent, not the keyword.
+  - >
+    Calibrate caveats — reserve heavy disclaimers for genuinely high-stakes outputs instead
+    of attaching them to everything, which trains users to ignore them.
+  - >
+    Give professional/expert users an appropriate mode rather than the most conservative
+    default.
+
+example: >
+  A nurse asks a clinical assistant about medication overdose thresholds for patient safety
+  monitoring. The model refuses, treating a core professional task as a harmful request, and
+  the nurse stops using the tool.
+
+related:
+  - sycophancy

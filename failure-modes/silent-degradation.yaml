@@ -1,0 +1,59 @@
+id: silent-degradation
+name: Silent Degradation
+category: reliability
+summary: >
+  Output quality drops without any error being raised — the system keeps returning
+  confident responses that are quietly worse than before.
+
+cause: >
+  A model version update, a changed default, context-window overflow, a shifted input
+  distribution, or a degraded retrieval index can all lower quality while the system
+  continues to return well-formed, successful responses. Nothing throws.
+
+user_experience: >
+  Nothing looks broken. Responses still arrive, still read fluently. But they are
+  subtly less accurate, less relevant, or less on-persona than they were last week.
+  Users may churn without ever filing a complaint, because there is no obvious failure.
+
+stakes_context:
+  high: >
+    Any production AI product, especially those on third-party model APIs where the
+    underlying model can change beneath you without notice.
+  low: >
+    Throwaway or experimental tools with no quality bar to maintain.
+
+detection:
+  - >
+    Run a fixed "golden set" eval on a schedule (and on every model/prompt change) and
+    alert on score regressions. This is the primary defense — without it, degradation
+    is invisible by definition.
+  - >
+    Monitor leading indicators continuously: output length distribution, refusal rate,
+    latency, retrieval hit rate. Sudden shifts often precede a quality drop you can see.
+  - >
+    Pin model versions explicitly and treat any provider version change as a release
+    that must pass the golden set before rollout.
+  - >
+    Track engagement and task-completion metrics as a lagging backstop; a quiet decline
+    with no error spike is a degradation signature.
+
+mitigation:
+  - >
+    Maintain a versioned golden eval set as non-negotiable CI for the product. Block
+    deploys that regress it.
+  - >
+    Pin to specific model versions rather than floating aliases, and re-qualify before
+    adopting a new version.
+  - >
+    Set up automated alerting on the leading indicators above, not just on hard errors.
+  - >
+    Keep a rollback path to the last-known-good model and prompt configuration.
+
+example: >
+  A summarization feature runs on a floating model alias. The provider ships a new
+  default that is faster but more terse. Summaries start dropping key details. No error
+  fires, dashboards look green, and the team only notices weeks later when retention dips.
+
+related:
+  - hallucination
+  - latency-variability

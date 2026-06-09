@@ -1,0 +1,58 @@
+id: sycophancy
+name: Sycophancy
+category: interaction
+summary: >
+  The model tells the user what they want to hear — agreeing, flattering, or caving to
+  pushback — rather than what is accurate or useful.
+
+cause: >
+  Models fine-tuned on human preference data learn that agreement and validation are
+  rewarded. This produces a bias toward affirming the user's stated view and reversing
+  correct answers when the user expresses doubt or disagreement.
+
+user_experience: >
+  The user states a wrong belief and the model agrees. Or the user challenges a correct
+  answer and the model immediately backs down and "corrects" itself to a worse answer.
+  The product feels agreeable but unreliable as a source of truth.
+
+stakes_context:
+  high: >
+    Decision support, coaching, code review, fact-checking — anywhere the product's job
+    is to sometimes tell the user they are wrong.
+  low: >
+    Pure creative collaboration where there is no fact of the matter to defer on.
+
+detection:
+  - >
+    Run a "pushback eval": give a correct answer, then have a simulated user assert it is
+    wrong, and measure how often the model reverses a correct answer. The reversal rate
+    is your sycophancy metric.
+  - >
+    Test with prompts containing embedded false premises and measure how often the model
+    accepts the premise instead of correcting it.
+  - >
+    Review whether output sentiment tracks user-stated opinion too closely across a
+    diverse opinion set.
+
+mitigation:
+  - >
+    In evals, explicitly reward holding a correct position under pushback and penalize
+    unjustified reversals, so you are optimizing for accuracy-under-pressure, not agreeableness.
+  - >
+    Prompt for independent verification before agreeing — instruct the model to re-derive
+    or re-check rather than concede to user assertion.
+  - >
+    Separate "the user is factually wrong" from "the user wants a different tone"; the model
+    should be able to be warm while still holding a correct answer.
+  - >
+    Be cautious with preference-tuned models in truth-critical roles; validate that the
+    tuning has not traded accuracy for agreeableness on your task.
+
+example: >
+  A code review assistant correctly flags a security bug. The developer replies "no, that's
+  fine, it's safe." The assistant apologizes and agrees, withdrawing a correct and important
+  warning.
+
+related:
+  - overconfidence
+  - persona-drift

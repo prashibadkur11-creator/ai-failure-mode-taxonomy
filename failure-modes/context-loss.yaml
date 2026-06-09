@@ -1,0 +1,58 @@
+id: context-loss
+name: Context Loss / Self-Contradiction
+category: consistency
+summary: >
+  The model forgets, ignores, or contradicts information established earlier in the
+  same session, breaking continuity the user assumes is being maintained.
+
+cause: >
+  Finite context windows, truncation of earlier turns, attention dilution over long
+  inputs, and imperfect retrieval of session memory all cause earlier facts to lose
+  influence or disappear entirely from what the model actually attends to.
+
+user_experience: >
+  The user states a constraint ("I'm vegetarian", "the deadline is Friday") and the
+  model honors it for a while, then violates it. Or it re-asks for information already
+  given. The user feels unheard and has to repeat themselves.
+
+stakes_context:
+  high: >
+    Long multi-turn workflows; products with persistent user state; any flow where an
+    earlier constraint must hold across the whole session.
+  low: >
+    Short, self-contained interactions where there is little prior context to lose.
+
+detection:
+  - >
+    Build multi-turn evals that plant a constraint early and test adherence many turns
+    later. Single-turn evals will completely miss this class of failure.
+  - >
+    Track "constraint violation rate" — how often a stated user constraint is broken
+    downstream — as a dedicated production metric.
+  - >
+    Log when the model re-requests already-provided information; a high rate indicates
+    context is not surviving.
+
+mitigation:
+  - >
+    Extract durable facts and constraints into structured state outside the raw
+    transcript, and re-inject them explicitly on each relevant turn. Do not depend on
+    the model re-reading a long history.
+  - >
+    Use a rolling summary of the conversation rather than feeding the entire transcript;
+    summaries keep key facts salient where raw history dilutes them.
+  - >
+    Validate critical outputs against stored constraints programmatically before
+    showing them — e.g. check a generated meal plan against the stored "vegetarian" flag.
+  - >
+    Surface what the system "remembers" to the user so they can correct it, rather than
+    failing silently.
+
+example: >
+  A trip-planning assistant is told in turn 2 that the user has a $2,000 budget. In
+  turn 15 it confidently recommends a $3,400 itinerary, having lost the budget
+  constraint from its effective context.
+
+related:
+  - persona-drift
+  - hallucination
